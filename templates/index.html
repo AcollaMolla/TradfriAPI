@@ -1,0 +1,231 @@
+<html>
+<head>
+<style>
+body{
+	font-family: "Tahoma", Geneva, sans-serif;
+}
+.switch {
+  position: relative;
+  top:-90px;
+  right:-80%;
+  display: inline-block;
+  width: 120px;
+  height: 68px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 52px;
+  width: 52px;
+  left: 4px;
+  bottom: 8px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(56px);
+  -ms-transform: translateX(56px);
+  transform: translateX(56px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 68px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+#device_info{
+	list-style-type:none;
+	margin-top: 10%;
+}
+
+.slider_container{
+	position:relative;
+	width: 50%;
+	left: 5%;
+	top:-45px;
+}
+
+.brightness{
+	position:relative;
+	width: 100%;
+	left: 25%;
+	-webkit-appearance: none;
+	height: 25px;
+	background: #d3d3d3;
+	outline: none;
+	opacity: 0.7;
+	-webkit-transition: .2s;
+	transition: opacity .2s;
+}
+
+.brightness:hover {
+  opacity: 1;
+}
+
+.brightness::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 75px;
+  height: 75px;
+  border-radius:100px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.brightness::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+li{
+	font-weight: bold;
+	margin-bottom: 20px;
+	font-size: 42px;
+}
+</style>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<body>
+		<h1>Devices</h1>
+		<div id="device_info_container">
+			<ul id="device_info"></ul>
+		</div>
+
+		<script>
+			function setDeviceStatus(e){
+				if(document.getElementById(e.target.id).checked){
+						$.post("/power?id=" + e.target.id + "&powerOn=on", function(data, status){
+						//updateDeviceStatus(e);
+				  });
+				}
+				else{
+						$.post("/power?id=" + e.target.id + "&powerOn=off", function(data, status){
+						//updateDeviceStatus(e);
+				  });
+				}
+			}
+			
+			function setDeviceBrightness(e){
+				console.log(e.target.value)
+				var text = document.createTextNode(e.target.value);
+				console.log(e.srcElement.id);
+				var output = document.getElementById("slider-info_" + e.srcElement.id);
+				output.appendChild(text);
+			}
+			
+			function getDeviceStatus(deviceId){
+				$.get("/getDevice?id=" + deviceId, function(data, status){
+			            var name = "5850";
+				    console.log(data[0]["5850"])
+				    if(data[0]["5850"] == 1){
+					document.getElementById(deviceId).checked = true;
+				    }
+				    else{
+					document.getElementById(deviceId).checked = false;
+				    }
+			});
+			}
+			
+			function updateDeviceStatus(e){
+				$.get("/api/values?device=" + e.target.id, function(data, status){
+				  if(data == "True"){
+					e.checked = true;
+				  }
+				  else{
+					e.checked = false;
+				  }
+			});
+			}
+			
+			function getAllDevices(){
+				$.get("/getAllDevices", function(data, status){
+					var deviceList = data;
+					deviceList.forEach(function(element){
+						console.log(element.DeviceID);
+						var x = document.getElementById("device_info");
+						
+						var node = document.createElement('LI');
+						var text = document.createTextNode(element.DeviceID);
+						
+						var slider_container = document.createElement('div');
+						slider_container.setAttribute("class", "slider_container");
+						var _deviceid = element.DeviceID;
+						var slider = document.createElement('input');
+						slider.setAttribute("type", "range");
+						slider.setAttribute("min", "1");
+						slider.setAttribute("max", "254");
+						slider.setAttribute("value", "254");
+						slider.setAttribute("class", "brightness");
+						slider.setAttribute("id", "brightness_" + element.DeviceID);
+						slider.setAttribute("onchange", "setDeviceBrightness(event)");
+						
+						var slider_info = document.createElement('p')
+						slider_info.setAttribute("id", "slider-info_brightness" + element.DeviceID);
+						
+						slider_container.appendChild(slider);
+						
+						var label = document.createElement('label');
+						label.setAttribute("class", "switch");
+						
+						var input = document.createElement('input');
+						input.setAttribute("type", "checkbox");
+						input.setAttribute("onchange", "setDeviceStatus(event)");
+						input.setAttribute("id", element.DeviceID);
+						
+						var span = document.createElement('span');
+						span.setAttribute("class", "slider round");
+						
+						label.appendChild(input);
+						label.appendChild(span);
+						
+						node.appendChild(text);
+						node.appendChild(slider_container);
+						node.appendChild(label);
+						x.appendChild(node);
+						
+						getDeviceStatus(element.DeviceID);
+					});
+				});
+			}
+		
+			$(document).ready(function(){
+					getAllDevices();
+				});
+		</script>
+	</body>
+</html>

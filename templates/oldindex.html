@@ -1,0 +1,19 @@
+<html>
+<body>
+<form action="http://192.168.0.6:3000/power" method="post">
+<select name="value">
+	<option value="on">On</option>
+	<option value="off">Off</option>
+</select>
+<select name="lightbulb_id">
+<option value="65537">Skrivbord</option>
+<option value="65538">Vardagsrum</option>
+</select>
+<input type="hidden" name="security_id" value="62LPERcMtepvnXI4"/>
+<input type="submit"/>
+</form>
+<script language="JavaScript" type="text/javascript">
+$.get('/active', 'test=bajs', function(data){});
+</script>
+</body>
+</html>
