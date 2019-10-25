@@ -141,11 +141,11 @@ li{
 			}
 			
 			function setDeviceBrightness(e){
-				console.log(e.target.value)
-				var text = document.createTextNode(e.target.value);
-				console.log(e.srcElement.id);
-				var output = document.getElementById("slider-info_" + e.srcElement.id);
-				output.appendChild(text);
+				console.log(e.target.value);
+				id = e.target.id.substring((e.target.id.indexOf('_') + 1), e.target.id.length);
+				$.post("/setDeviceBrightness?id=" + id + "&value=" + e.target.value, function(data, status){
+					getDeviceStatus(id);
+				});
 			}
 			
 			function getDeviceStatus(deviceId){
@@ -201,7 +201,7 @@ li{
 
 						var slider = document.createElement('input');
 						slider.setAttribute("type", "range");
-						slider.setAttribute("min", "1");
+						slider.setAttribute("min", "0");
 						slider.setAttribute("max", "254");
 						slider.setAttribute("value", "254");
 						slider.setAttribute("class", "brightness");

@@ -50,13 +50,13 @@ def tradfri_power_light(hubip, userid, securityid, lightbulbid, value):
     return True
 
 
-def tradfri_dim_light(hubip, securityid, lightbulbid, value):
+def tradfri_dim_light(hubip, userid, securityid, lightbulbid, value):
     """ function for dimming tradfri lightbulb """
-    dim = float(value) * 2.55
+    print('dim light func')
     tradfriHub = 'coaps://{}:5684/15001/{}'.format(hubip, lightbulbid)
-    payload = '{ "3311" : [{ "5851" : %s }] }' % int(dim)
+    payload = '{ "3311" : [{ "5851" : %s }] }' % int(value)
 
-    api = '{} -m put -u "Client_identity" -k "{}" -e \'{}\' "{}"'.format(coap, securityid,
+    api = '{} -m put -u "{}" -k "{}" -e \'{}\' "{}"'.format(coap, userid, securityid,
                                                                          payload, tradfriHub)
 
     if os.path.exists(coap):
@@ -64,8 +64,7 @@ def tradfri_dim_light(hubip, securityid, lightbulbid, value):
     else:
         sys.stderr.write('[-] libcoap: could not find libcoap\n')
         sys.exit(1)
-
-    return result
+    return True
 
 def tradfri_color_light(hubip, securityid, lightbulbid, value):
     """ function for color temperature tradfri lightbulb """

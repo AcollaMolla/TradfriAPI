@@ -39,40 +39,57 @@ def GetCookie(cookies):
 
 class Power(Resource):
 	def post(self):
-		lightbulb_id = request.args.get("id")
-		command = request.args.get("powerOn")
-		response = tradfriActions.tradfri_power_light(hub_ip, user_id,  security_id, lightbulb_id, command)
-		return response
+		if GetCookie(request.cookies):
+			lightbulb_id = request.args.get("id")
+			command = request.args.get("powerOn")
+			response = tradfriActions.tradfri_power_light(hub_ip, user_id,  security_id, lightbulb_id, command)
+			return response
+		else:
+			abort(404)
 
 class GetAllDevices(Resource):
 	def get(self):
-		#device1 = '{"DeviceID":"65537", "powerOn":"off"}'
-		#device2 = '{"DeviceID":"65538", "powerOn":"off"}'
-		#x = json.loads(device1)
-		#y = json.loads(device2)
-		#deviceList = [x, y]
-		deviceList = tradfriStatus.tradfri_get_devices(hub_ip, user_id, security_id)
-		return deviceList
+		if GetCookie(request.cookies):
+			deviceList = tradfriStatus.tradfri_get_devices(hub_ip, user_id, security_id)
+			return deviceList
+		else:
+			abort(404)
 
 class GetDevice(Resource):
 	def get(self):
-		lightbulb_id = request.args.get("id")
-		response = tradfriStatus.tradfri_get_lightbulb(hub_ip, user_id,  security_id, lightbulb_id)
-		try:
-			test = json.dumps(response)
-		except ValueError as e:
-			return 0
-		try:
-			test2 = json.loads(test)
-		except ValueError as e:
-			return 0
-		return test2['3311']
+		if GetCookie(request.cookies):
+			lightbulb_id = request.args.get("id")
+			response = tradfriStatus.tradfri_get_lightbulb(hub_ip, user_id,  security_id, lightbulb_id)
+			try:
+				test = json.dumps(response)
+			except ValueError as e:
+				return 0
+			try:
+				test2 = json.loads(test)
+			except ValueError as e:
+				return 0
+			return test2['3311']
+		else:
+			abort(404)
 
 class GetDeviceType(Resource):
 	def get(self):
-		device_id = request.args.get("id")
-		response = tradfriStatus.tradfri_get_lightbulb(hub_ip, user_id, security_id, device_id)
-		return response
+		if GetCookie(request.cookies):
+			device_id = request.args.get("id")
+			response = tradfriStatus.tradfri_get_lightbulb(hub_ip, user_id, security_id, device_id)
+			return response
+		else:
+			abort(404)
+
+class SetDeviceBrightness(Resource):
+	def post(self):
+		if GetCookie(request.cookies):
+			device_id = request.args.get("id")
+			value = request.args.get("value")
+			response = tradfriActions.tradfri_dim_light(hub_ip, user_id, security_id, device_id, value)
+			return response
+		else:
+			abort(404)
 
 class Ulvsby(Resource):
 	def get(self):
@@ -92,6 +109,7 @@ api.add_resource(Power, '/power')
 api.add_resource(GetAllDevices, '/getAllDevices')
 api.add_resource(GetDevice, '/getDevice')
 api.add_resource(GetDeviceType, '/getDeviceType')
+api.add_resource(SetDeviceBrightness, '/setDeviceBrightness')
 api.add_resource(Ulvsby, '/ulvsby')
 api.add_resource(Index, '/')
 app.run(host='0.0.0.0', port='3000')
