@@ -70,7 +70,7 @@ class GetDevice(Resource):
 class Ulvsby(Resource):
 	def get(self):
 		res = make_response(render_template('ulvsby.html'))
-		res.set_cookie(cookie_name, cookie_value)
+		res.set_cookie(cookie_name, cookie_value, max_age=63113852)
 		return res
 
 class Index(Resource):
