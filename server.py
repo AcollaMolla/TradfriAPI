@@ -46,11 +46,12 @@ class Power(Resource):
 
 class GetAllDevices(Resource):
 	def get(self):
-		device1 = '{"DeviceID":"65537", "powerOn":"off"}'
-		device2 = '{"DeviceID":"65538", "powerOn":"off"}'
-		x = json.loads(device1)
-		y = json.loads(device2)
-		deviceList = [x, y]
+		#device1 = '{"DeviceID":"65537", "powerOn":"off"}'
+		#device2 = '{"DeviceID":"65538", "powerOn":"off"}'
+		#x = json.loads(device1)
+		#y = json.loads(device2)
+		#deviceList = [x, y]
+		deviceList = tradfriStatus.tradfri_get_devices(hub_ip, user_id, security_id)
 		return deviceList
 
 class GetDevice(Resource):
@@ -66,6 +67,12 @@ class GetDevice(Resource):
 		except ValueError as e:
 			return 0
 		return test2['3311']
+
+class GetDeviceType(Resource):
+	def get(self):
+		device_id = request.args.get("id")
+		response = tradfriStatus.tradfri_get_lightbulb(hub_ip, user_id, security_id, device_id)
+		return response
 
 class Ulvsby(Resource):
 	def get(self):
@@ -84,6 +91,7 @@ class Index(Resource):
 api.add_resource(Power, '/power')
 api.add_resource(GetAllDevices, '/getAllDevices')
 api.add_resource(GetDevice, '/getDevice')
+api.add_resource(GetDeviceType, '/getDeviceType')
 api.add_resource(Ulvsby, '/ulvsby')
 api.add_resource(Index, '/')
 app.run(host='0.0.0.0', port='3000')

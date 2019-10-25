@@ -171,31 +171,49 @@ li{
 				  }
 			});
 			}
+
+			function deviceIsControllable(id, callback){
+				$.get("/getDeviceType?id=" + id, function(data, status){
+					console.log(data)
+					console.log(data["5750"])
+					if(data["5750"] == 2){
+						callback(true);
+					}
+					else{
+						callback(false);
+					}
+				});
+			}
 			
 			function getAllDevices(){
 				$.get("/getAllDevices", function(data, status){
 					var deviceList = data;
 					deviceList.forEach(function(element){
-						console.log(element.DeviceID);
+						var device_type = false;
+						deviceIsControllable(element, function(callback){
+							device_type = callback;
+						});
+						if(element !== 65536){
+
 						var x = document.getElementById("device_info");
 						
 						var node = document.createElement('LI');
-						var text = document.createTextNode(element.DeviceID);
+						var text = document.createTextNode(element);
 						
 						var slider_container = document.createElement('div');
 						slider_container.setAttribute("class", "slider_container");
-						var _deviceid = element.DeviceID;
+
 						var slider = document.createElement('input');
 						slider.setAttribute("type", "range");
 						slider.setAttribute("min", "1");
 						slider.setAttribute("max", "254");
 						slider.setAttribute("value", "254");
 						slider.setAttribute("class", "brightness");
-						slider.setAttribute("id", "brightness_" + element.DeviceID);
+						slider.setAttribute("id", "brightness_" + element);
 						slider.setAttribute("onchange", "setDeviceBrightness(event)");
 						
 						var slider_info = document.createElement('p')
-						slider_info.setAttribute("id", "slider-info_brightness" + element.DeviceID);
+						slider_info.setAttribute("id", "slider-info_brightness" + element);
 						
 						slider_container.appendChild(slider);
 						
@@ -205,7 +223,7 @@ li{
 						var input = document.createElement('input');
 						input.setAttribute("type", "checkbox");
 						input.setAttribute("onchange", "setDeviceStatus(event)");
-						input.setAttribute("id", element.DeviceID);
+						input.setAttribute("id", element);
 						
 						var span = document.createElement('span');
 						span.setAttribute("class", "slider round");
@@ -218,7 +236,8 @@ li{
 						node.appendChild(label);
 						x.appendChild(node);
 						
-						getDeviceStatus(element.DeviceID);
+						getDeviceStatus(element);
+						}
 					});
 				});
 			}
