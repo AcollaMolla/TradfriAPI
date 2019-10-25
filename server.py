@@ -18,6 +18,8 @@ conf.read('tradfri.cfg')
 security_id = conf.get('tradfri', 'apikey')
 hub_ip = conf.get('tradfri', 'hubip')
 user_id = conf.get('tradfri', 'userid')
+cookie_name = conf.get('cookie', 'cookiename')
+cookie_value = conf.get('cookie', 'cookievalue')
 print(security_id)
 print(hub_ip)
             
@@ -25,6 +27,15 @@ class Device:
 	def __init__(self, DeviceID, isActive):
 		self.DeviceID = DeviceID
 		self.isActive = isActive
+
+def GetCookie(cookies):
+	if cookie_name in cookies:
+		if cookie_value in cookies.get(cookie_name):
+			return True
+		else:
+			return False
+	else:
+		return False
 
 class Power(Resource):
 	def post(self):
@@ -56,12 +67,23 @@ class GetDevice(Resource):
 			return 0
 		return test2['3311']
 
+class Ulvsby(Resource):
+	def get(self):
+		res = make_response(render_template('ulvsby.html'))
+		res.set_cookie(cookie_name, cookie_value)
+		return res
+
 class Index(Resource):
 	def get(self):
-		return make_response(render_template('index.html'))
+		if GetCookie(request.cookies):
+			res = make_response(render_template('index.html'))
+			return res
+		else:
+			abort(404)
 
 api.add_resource(Power, '/power')
 api.add_resource(GetAllDevices, '/getAllDevices')
 api.add_resource(GetDevice, '/getDevice')
+api.add_resource(Ulvsby, '/ulvsby')
 api.add_resource(Index, '/')
 app.run(host='0.0.0.0', port='3000')
