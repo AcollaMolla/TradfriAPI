@@ -172,15 +172,15 @@ li{
 			});
 			}
 
-			function deviceIsControllable(id, callback){
+			function deviceIsControllable(id){
 				$.get("/getDeviceType?id=" + id, function(data, status){
 					console.log(data)
 					console.log(data["5750"])
 					if(data["5750"] == 2){
-						callback(true);
+						return true;
 					}
 					else{
-						callback(false);
+						return false;
 					}
 				});
 			}
@@ -189,10 +189,6 @@ li{
 				$.get("/getAllDevices", function(data, status){
 					var deviceList = data;
 					deviceList.forEach(function(element){
-						var device_type = false;
-						deviceIsControllable(element, function(callback){
-							device_type = callback;
-						});
 						if(element !== 65536){
 
 						var x = document.getElementById("device_info");
