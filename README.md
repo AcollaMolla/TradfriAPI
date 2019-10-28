@@ -36,8 +36,8 @@ hubip = [TRADFRI HUB IP ADDRESS]
 userid = [ARBITRARY USERNAME]
 apikey = [GENERATED KEY]
 [cookie]
-cookiename = [NAME OF COOKIE]
-cookievalue = [COOKIE VALUE]
+cookiename = [ARBITRARY NAME OF COOKIE]
+cookievalue = [ARBITRARY COOKIE VALUE]
 ```
 # Run the server: #
 ```
