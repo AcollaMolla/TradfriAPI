@@ -39,7 +39,7 @@ apikey = [GENERATED KEY]
 cookiename = [NAME OF COOKIE]
 cookievalue = [COOKIE VALUE]
 ```
-#Run the server:#
+# Run the server: #
 ```
 python server.py
 ```
