@@ -13,7 +13,7 @@ git submodule update --init --recursive
 ./configure --disable-documentation --disable-shared
 make
 sudo make install
-
+```
 Install tqdm with the following commands:
 ```
 sudo apt-get install python-pip
