@@ -27,10 +27,16 @@ def tradfri_get_lightbulb(hubip, apiuser, apikey, deviceid):
 	api = '{} -m get -u "{}" -k "{}" "{}" -B {} 2> /dev/null' .format(coap, apiuser, apikey, tradfriHub, timeout)
 	if(os.path.exists(coap)):
 		result = os.popen(api)
+		errorResult = os.popen(api +  " 2>&1")
+		errorResponse =  (errorResult.read().strip('\n').split('\n')[-3])
 	else:
 		sys.stderr.write('[-] libcoap: could not find libcoap.\n')
 		sys.exit(1)
-	return json.loads(result.read().strip('\n').split('\n')[-1])
+	try:
+		response = json.loads(result.read().strip('\n').split('\n')[-1])
+	except:
+		response =  errorResponse
+	return response
 
 def tradfri_get_devices(hubip, apiuser, apikey):
 	tradfriHub = 'coaps://{}:5684/15001' .format(hubip)

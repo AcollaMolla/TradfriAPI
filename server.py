@@ -37,6 +37,10 @@ def GetCookie(cookies):
 	else:
 		return False
 
+def Log(request_data):
+	with open("log.txt", "a") as log:
+		log.write(request_data)
+
 class Power(Resource):
 	def post(self):
 		if GetCookie(request.cookies):
@@ -65,10 +69,10 @@ class GetDevice(Resource):
 			except ValueError as e:
 				return 0
 			try:
-				test2 = json.loads(test)
+				response = json.loads(test)
 			except ValueError as e:
 				return 0
-			return test2['3311']
+			return response
 		else:
 			abort(404)
 
@@ -90,6 +94,19 @@ class SetDeviceBrightness(Resource):
 			return response
 		else:
 			abort(404)
+class SetDeviceName(Resource):
+	def post(self):
+		deviceid = request.args.get("id")
+		value = request.args.get("value")
+		print(deviceid)
+		print(value)
+		response = tradfriActions.tradfri_set_device_name(hub_ip, user_id, security_id, deviceid, value)
+		return response
+
+class ReceiveCommand(Resource):
+	def post(self):
+		return 0;
+
 
 class Ulvsby(Resource):
 	def get(self):
@@ -110,6 +127,10 @@ api.add_resource(GetAllDevices, '/getAllDevices')
 api.add_resource(GetDevice, '/getDevice')
 api.add_resource(GetDeviceType, '/getDeviceType')
 api.add_resource(SetDeviceBrightness, '/setDeviceBrightness')
+api.add_resource(SetDeviceName, '/setDeviceName')
 api.add_resource(Ulvsby, '/ulvsby')
 api.add_resource(Index, '/')
 app.run(host='0.0.0.0', port='3000')
+@app.before_request
+def log_request_info():
+	app.logger.debug(request.headers)

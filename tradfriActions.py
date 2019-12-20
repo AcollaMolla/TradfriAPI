@@ -125,3 +125,14 @@ def tradfri_dim_group(hubip, securityid, groupid, value):
         sys.exit(1)
 
     return result
+
+def tradfri_set_device_name(hubip, userid, securityid, deviceid, value):
+	tradfriHub = 'coaps://{}:5684/15001/{}' .format(hubip,deviceid)
+	payload = '{ "9001" : "'+value+'" }'
+	api = '{} -m put -u "{}" -k "{}" -e \'{}\' "{}"' .format(coap, userid, securityid, payload, tradfriHub)
+	if os.path.exists(coap):
+		os.popen(api)
+	else:
+		sys.stderr.write('[-] libcoap: could not find libcoap')
+		sys.exit(1)
+	return True 

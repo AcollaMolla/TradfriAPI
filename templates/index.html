@@ -75,7 +75,7 @@ input:checked + .slider:before {
 	position:relative;
 	width: 50%;
 	left: 5%;
-	top:-45px;
+	top:-30px;
 }
 
 .brightness{
@@ -115,7 +115,7 @@ input:checked + .slider:before {
 li{
 	font-weight: bold;
 	margin-bottom: 20px;
-	font-size: 42px;
+	font-size: 24px;
 }
 </style>
 </head>
@@ -150,15 +150,15 @@ li{
 			
 			function getDeviceStatus(deviceId){
 				$.get("/getDevice?id=" + deviceId, function(data, status){
-			            var name = "5850";
-				    console.log(data[0]["5850"])
-				    if(data[0]["5850"] == 1){
+				    console.log("power: " + data["3311"][0]["5850"])
+				    document.getElementById("span_" + deviceId).innerHTML = data["9001"];
+				    if(data["3311"][0]["5850"] == 1){
 					document.getElementById(deviceId).checked = true;
 				    }
 				    else{
 					document.getElementById(deviceId).checked = false;
 				    }
-				    document.getElementById("brightness_" + deviceId).value = data[0]["5851"];
+				    document.getElementById("brightness_" + deviceId).value = data["3311"][0]["5851"];
 			});
 			}
 			
@@ -185,6 +185,11 @@ li{
 					}
 				});
 			}
+
+			function showSettings(e){
+				var query = prompt(">:","");
+										
+			}
 			
 			function getAllDevices(){
 				$.get("/getAllDevices", function(data, status){
@@ -196,6 +201,10 @@ li{
 						
 						var node = document.createElement('LI');
 						var text = document.createTextNode(element);
+						var textSpan = document.createElement('span');
+						textSpan.setAttribute("id", "span_" + element);
+						textSpan.setAttribute("onclick", "showSettings(event)");
+						textSpan.appendChild(text);
 						
 						var slider_container = document.createElement('div');
 						slider_container.setAttribute("class", "slider_container");
@@ -228,7 +237,7 @@ li{
 						label.appendChild(input);
 						label.appendChild(span);
 						
-						node.appendChild(text);
+						node.appendChild(textSpan);
 						node.appendChild(slider_container);
 						node.appendChild(label);
 						x.appendChild(node);
@@ -242,6 +251,12 @@ li{
 			$(document).ready(function(){
 					getAllDevices();
 				});
+			document.addEventListener('keydown', function(event){
+				if(event.keyCode == 82){
+					var name = prompt('Enter name');
+					console.log(name);
+				}
+			});
 		</script>
 	</body>
 </html>
