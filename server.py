@@ -3,6 +3,7 @@ import tradfriStatus
 import codecs
 import json
 import ConfigParser
+import datetime
 from flask import Flask
 from flask import request
 from flask_restful import Resource, Api
@@ -38,12 +39,15 @@ def GetCookie(cookies):
 		return False
 
 def Log(request_data):
-	with open("log.txt", "a") as log:
-		log.write(request_data)
+	n = datetime.datetime.now()
+	p = request_data.path
+	fo = open("log.txt", "a")
+	fo.write("{0}:".format(n) + "[" + request_data.method + " "  + request_data.path + "] " +  request_data.environ.get('HTTP_X_REAL_IP', request.remote_addr)+ "\n")
 
 class Power(Resource):
 	def post(self):
 		if GetCookie(request.cookies):
+			Log(request)
 			lightbulb_id = request.args.get("id")
 			command = request.args.get("powerOn")
 			response = tradfriActions.tradfri_power_light(hub_ip, user_id,  security_id, lightbulb_id, command)
@@ -53,6 +57,7 @@ class Power(Resource):
 
 class GetAllDevices(Resource):
 	def get(self):
+		Log(request)
 		if GetCookie(request.cookies):
 			deviceList = tradfriStatus.tradfri_get_devices(hub_ip, user_id, security_id)
 			return deviceList
@@ -88,6 +93,7 @@ class GetDeviceType(Resource):
 class SetDeviceBrightness(Resource):
 	def post(self):
 		if GetCookie(request.cookies):
+			Log(request)
 			device_id = request.args.get("id")
 			value = request.args.get("value")
 			response = tradfriActions.tradfri_dim_light(hub_ip, user_id, security_id, device_id, value)
@@ -110,6 +116,10 @@ class ReceiveCommand(Resource):
 
 class Ulvsby(Resource):
 	def get(self):
+		Log(request)
+		#n = datetime.datetime.now()
+		#fo = open("log.txt", "a")
+		#fo.write("{0} :".format(n) + request.environ.get('HTTP_X_REAL_IP', request.remote_addr)+ "\n")
 		res = make_response(render_template('ulvsby.html'))
 		res.set_cookie(cookie_name, cookie_value, max_age=63113852)
 		return res
