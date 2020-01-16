@@ -41,7 +41,7 @@ def GetCookie(cookies):
 def Log(request_data):
 	n = datetime.datetime.now()
 	p = request_data.path
-	fo = open("log.txt", "a")
+	fo = open("log.txt", "a", 0)
 	fo.write("{0}:".format(n) + "[" + request_data.method + " "  + request_data.path + "] " +  request_data.environ.get('HTTP_X_REAL_IP', request.remote_addr)+ "\n")
 
 class Power(Resource):
