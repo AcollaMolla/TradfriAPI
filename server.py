@@ -1,3 +1,4 @@
+import sys
 import tradfriActions
 import tradfriStatus
 import codecs
@@ -43,7 +44,7 @@ def Log(request_data):
 	p = request_data.path
 	fo = open("log.txt", "a", 0)
 	fo.write("{0}:".format(n) + "[" + request_data.method + " "  + request_data.path + "] " +  request_data.environ.get('HTTP_X_REAL_IP', request.remote_addr)+ "\n")
-
+	sys.stdout.flush()
 class Power(Resource):
 	def post(self):
 		if GetCookie(request.cookies):
